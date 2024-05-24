@@ -7,6 +7,10 @@
 - The Deployment Diagram
   ![Deployment Diagram](diagrams/deployment_diagram.png)
 
+## 2. The future architecture of group C6-HoomGroom.
+- The Container Diagram
+![Container Diagram](diagrams/new-container.png)
+
 ## 3. Explanation of risk storming of group C6-HoomGroom.
 #### Risk Storming
 - Availability:
