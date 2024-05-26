@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
 import java.util.UUID;
 
@@ -40,10 +41,14 @@ public class TransactionController {
     @GetMapping("/edit/{id}")
     public String editTransactionPage(@PathVariable("id") UUID transactionId, Model model) {
         System.out.println(transactionId);
+        String nanoId = NanoIdUtils.randomNanoId(); // Generates a NanoID using default settings
+        String shippingCode = "HG-" + nanoId;
+
         RestTemplate restTemplate = new RestTemplate();
         String url = "https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/id/" + transactionId;
         Transaction transaction = restTemplate.getForObject(url, Transaction.class);
         model.addAttribute("transaction", transaction);
+        model.addAttribute("shippingCode", shippingCode);
         return "editTransactionPage";
     }
 }
