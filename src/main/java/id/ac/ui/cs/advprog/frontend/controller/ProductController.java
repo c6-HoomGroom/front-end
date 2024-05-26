@@ -24,61 +24,6 @@ public class ProductController {
         return "productPage";
     }
 
-    @PostMapping("")
-    public String createProductPost(@ModelAttribute Product product, @RequestParam(value = "tagNames", required = false) String tagNames) throws URISyntaxException {
-        RestTemplate restTemplate = new RestTemplate();
-        String endpointUrl = "https://product-service-uflspwyoiq-ew.a.run.app/products/api";
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-
-        Map<String, Object> requestBody = new HashMap<>();
-        requestBody.put("name", product.getName());
-        requestBody.put("description", product.getDescription());
-        requestBody.put("image", product.getImage());
-        requestBody.put("price", product.getPrice());
-        requestBody.put("discountPrice", product.getDiscountPrice());
-
-        Set<Tag> selectedTags = new HashSet<>();
-        if (tagNames != null && !tagNames.isEmpty()) {
-            String[] tags = tagNames.split(",");
-
-            for (String tagName : tags) {
-                System.out.println(tagName);
-                URI url = new URI("https://product-service-uflspwyoiq-ew.a.run.app/tags/api/name/" + tagName);
-                Tag tag = restTemplate.getForObject(url, Tag.class);
-                if (tag != null) {
-                    selectedTags.add(tag);
-                }
-            }
-
-            System.out.println(selectedTags);
-            requestBody.put("tags", selectedTags);
-        }
-
-        HttpEntity<Map<String, Object>> entity = new HttpEntity<>(requestBody, headers);
-        ResponseEntity<String> responseEntity = restTemplate.exchange(endpointUrl, HttpMethod.POST, entity, String.class);
-        return "redirect:/products";
-    }
-
-    @GetMapping("/add")
-    public String createProductPage(Model model) throws URISyntaxException {
-        model.addAttribute("product", new Product());
-        URI url = new URI("https://product-service-uflspwyoiq-ew.a.run.app/tags/api");
-        RestTemplate restTemplate = new RestTemplate();
-        Tag[] tags = restTemplate.getForObject(url, Tag[].class);
-        model.addAttribute("allTags", tags);
-        return "productCreate";
-    }
-
-    @PostMapping("/delete")
-    public String deleteProduct(@RequestParam("productId") String productId) {
-        String apiUrl = "https://product-service-uflspwyoiq-ew.a.run.app/products/api/delete/" + productId;
-        RestTemplate restTemplate = new RestTemplate();
-        restTemplate.delete(apiUrl);
-        return "redirect:/products";
-    }
-
     @GetMapping("/edit/{id}")
     public String editProductPage(@PathVariable("id") String id, Model model) throws URISyntaxException {
         RestTemplate restTemplate = new RestTemplate();
@@ -114,7 +59,6 @@ public class ProductController {
             String[] tags = tagNames.split(",");
 
             for (String tagName : tags) {
-                System.out.println(tagName);
                 URI url = new URI("https://product-service-uflspwyoiq-ew.a.run.app/tags/api/name/" + tagName);
                 Tag tag = restTemplate.getForObject(url, Tag.class);
                 if (tag != null) {
@@ -122,7 +66,6 @@ public class ProductController {
                 }
             }
 
-            System.out.println(selectedTags);
             requestBody.put("tags", selectedTags);
         }
 
