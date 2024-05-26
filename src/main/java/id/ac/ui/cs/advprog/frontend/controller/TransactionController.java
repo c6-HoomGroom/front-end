@@ -1,15 +1,13 @@
 package id.ac.ui.cs.advprog.frontend.controller;
 
 import id.ac.ui.cs.advprog.frontend.model.Product;
-import id.ac.ui.cs.advprog.frontend.model.TransactionRequest;
-import org.springframework.beans.factory.annotation.Value;
+import id.ac.ui.cs.advprog.frontend.model.Transaction;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.client.RestTemplate;
+import com.aventrix.jnanoid.jnanoid.NanoIdUtils;
 
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 
 @Controller
@@ -25,7 +23,11 @@ public class TransactionController {
         return "testPage";
     }
 
-    @CrossOrigin(origins = "http://localhost:8080")
+    @GetMapping("/all")
+    public String goToTransactionPage(Model model) {
+        return "transactionPage";
+    }
+
     @GetMapping("/buy/{id}")
     public String showPurchasePage(@PathVariable("id") UUID productId, Model model) {
         System.out.println(productId);
@@ -34,5 +36,19 @@ public class TransactionController {
         Product product = restTemplate.getForObject(url, Product.class);
         model.addAttribute("product", product);
         return "purchasePage";
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editTransactionPage(@PathVariable("id") UUID transactionId, Model model) {
+        System.out.println(transactionId);
+        String nanoId = NanoIdUtils.randomNanoId(); // Generates a NanoID using default settings
+        String shippingCode = "HG-" + nanoId;
+
+        RestTemplate restTemplate = new RestTemplate();
+        String url = "https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/id/" + transactionId;
+        Transaction transaction = restTemplate.getForObject(url, Transaction.class);
+        model.addAttribute("transaction", transaction);
+        model.addAttribute("shippingCode", shippingCode);
+        return "editTransactionPage";
     }
 }

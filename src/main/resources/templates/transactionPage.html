@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Page</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+
+<body>
+<div th:replace="~{header :: header}"></div>
+<div class="container">
+    <h1 class="my-4">Transactions</h1>
+    <div class="card-columns" id="transaction-list">
+
+    </div>
+</div>
+
+<script>
+    const transactionList = document.getElementById("transaction-list");
+
+    async function getTransactions() {
+        const response = await fetch("https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/all");
+        if (!response.ok) {
+            throw new Error("Failed to fetch transactions");
+        }
+        return response.json();
+    }
+
+    async function getProduct(productId) {
+        const response = await fetch("https://product-service-uflspwyoiq-ew.a.run.app/products/api/id/" + productId);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch product with ID: ${productId}`);
+        }
+        return response.json();
+    }
+
+    async function refreshProducts() {
+        try {
+            const transactions = await getTransactions();
+            transactionList.innerHTML = "";
+            for (const transaction of transactions) {
+                const product = await getProduct(transaction.productId);
+                console.log(product)
+                const card = document.createElement("div");
+                card.className = "card";
+
+                card.innerHTML = `
+                    <div class="card-body">
+                        <h5 class="card-title">Transaction ID: ${transaction.id}</h5>
+                        <p class="card-text">Product: ${product.name}</p>
+                        <p class="card-text">Promo Code ID: ${transaction.promoCodeId}</p>
+                        <p class="card-text">Quantity: ${transaction.quantity}</p>
+                        <p class="card-text">Total Price: Rp${transaction.totalPrice}</p>
+                        <p class="card-text">Delivery Status: ${transaction.deliveryStatus}</p>
+                        <p class="card-text">Shipping Code: ${transaction.shippingCode}</p>
+                        <a href="/transaction/edit/${transaction.id}" class="btn btn-primary">Update Delivery Status</a>
+                    </div>
+                `;
+
+                transactionList.appendChild(card);
+            }
+        } catch (error) {
+            console.error("Error fetching data:", error);
+        }
+    }
+
+    refreshProducts()
+</script>
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
