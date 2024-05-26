@@ -33,7 +33,6 @@
     }
 
     function updateUI(status) {
-        let shippingCode = null;
         const container = document.getElementById('statusControls');
         container.innerHTML = ''; // Clear previous controls
 
@@ -94,7 +93,7 @@
             });
             if (response.ok) {
                 alert('Status updated successfully!');
-                getStatusAndUpdateUI(); // Refresh UI to reflect new status
+                window.location.href = '/transaction/all';
             } else {
                 throw new Error('Failed to update status');
             }
