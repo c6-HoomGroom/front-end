@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Purchase Product</title>
+  <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" rel="stylesheet">
+</head>
+
+
+<body>
+<div th:replace="header :: header"></div>
+
+<div class="container my-2">
+  <h2>Purchase Product</h2>
+  <div>
+    <h3 th:text="${product.name}"></h3>
+    <p th:text="${product.description}"></p>
+    <p>Price: <span th:text="${product.price}"></span></p>
+    <img th:src="${product.image}" alt="Product Image" class="img-fluid" />
+  </div>
+  <form id="purchaseForm">
+    <input type="hidden" id="productId" name="productId" th:value="${product.id}"/>
+    <div class="form-group">
+      <label for="quantity">Quantity:</label>
+      <input type="number" class="form-control" id="quantity" name="quantity" min="1" value="1" required />
+    </div>
+    <div class="form-group">
+      <label for="voucherId">Voucher Code:</label>
+      <input type="text" class="form-control" id="voucherId" name="voucherId" />
+    </div>
+    <div class="form-group">
+      <label for="userId">User ID:</label>
+      <input type="text" class="form-control" id="userId" name="userId" required />
+    </div>
+    <button type="button" class="btn btn-primary" onclick="submitForm()">Buy</button>
+  </form>
+  <div id="errorMessage" class="alert alert-danger" role="alert" style="display: none;">
+    <span id="errorText"></span>
+  </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  async function submitForm() {
+    const form = document.getElementById('purchaseForm');
+    const formData = new FormData(form);
+    const jsonData = {};
+    formData.forEach((value, key) => {
+      jsonData[key] = value;
+    });
+
+    try {
+      const response = await fetch('https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/create', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(jsonData)
+      });
+
+      if (response.ok) {
+        window.location.href = '/products';
+      } else {
+        const error = await response.json();
+        document.getElementById('errorText').textContent = error.message;
+        document.getElementById('errorMessage').style.display = 'block';
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      document.getElementById('errorText').textContent = 'An error occurred. Please try again.';
+      document.getElementById('errorMessage').style.display = 'block';
+    }
+  }
+</script>
+</body>
+</html>
