@@ -41,6 +41,11 @@
           <button type="submit" class="btn btn-danger btn-sm">Delete</button>
         </form>
       </td>
+      <td>
+        <form th:action="@{/transaction/buy/{id}(id=${product.id})}" method="get">
+          <button type="submit" class="btn btn-sm">Buy</button>
+        </form>
+      </td>
     </tr>
 
     </tbody>
