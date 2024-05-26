@@ -99,6 +99,7 @@
                 <td>${product.tags.map(tag => tag.name).join(', ')}</td>
                 <td><button class="btn btn-info btn-sm edit-button" data-product-id="${product.id}">Edit</button></td>
                 <td><button class="btn btn-danger btn-sm delete-button" data-product-id="${product.id}">Delete</button></td>
+                <td><button class="btn btn-sm buy-button" data-product-id="${product.id}">Buy</button></td>
               </tr>`;
           });
           htmlString += `</tbody></table>`;
@@ -110,6 +111,11 @@
     $('body').on('click', '.edit-button', function() {
       const productId = $(this).data('product-id');
       window.location.href = `/products/edit/${productId}`;
+    });
+
+    $('body').on('click', '.buy-button', function() {
+      const productId = $(this).data('product-id');
+      window.location.href = `/transaction/buy/${productId}`;
     });
 
     $('body').on('click', '.delete-button', function() {
