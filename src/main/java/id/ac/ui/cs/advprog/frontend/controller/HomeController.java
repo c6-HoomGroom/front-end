@@ -29,14 +29,5 @@ public class HomeController {
         return "testPage";
     }
 
-
-    @GetMapping("/products")
-    public String goToProductPage(Model model) throws URISyntaxException {
-        URI url = new URI("https://product-service-uflspwyoiq-ew.a.run.app/products/api");
-        RestTemplate restTemplate = new RestTemplate();
-        Product[] products = restTemplate.getForObject(url, Product[].class);
-        model.addAttribute("products", products);
-        return "productPage";
-    }
 }
 
