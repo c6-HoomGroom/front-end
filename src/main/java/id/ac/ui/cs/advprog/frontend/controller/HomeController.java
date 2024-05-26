@@ -1,16 +1,8 @@
 package id.ac.ui.cs.advprog.frontend.controller;
 
-import id.ac.ui.cs.advprog.frontend.model.Product;
-import id.ac.ui.cs.advprog.frontend.model.Tag;
-import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
-
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.util.*;
 
 @Controller
 @RequestMapping("")
