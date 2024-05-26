@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF8">
+    <title>Update Delivery Status</title>
+    <!-- Include Bootstrap CSS from CDN -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+<div class="container mt-5">
+    <h1 class="mb-4">Update Delivery Status</h1>
+    <div id="statusControls" class="mb-3"></div>
+    <input type="hidden" id="transactionId" name="transactionId" th:value="${transaction.id}"/>
+    <input type="hidden" id="shippingCode" name="shippingCode" th:value="${shippingCode}"/>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    const transactionId = document.getElementById("transactionId").value;
+    const shippingCode = document.getElementById("shippingCode").value;
+
+    async function getStatusAndUpdateUI() {
+        try {
+            const response = await fetch('https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/id/' + transactionId);
+            const data = await response.json();
+            updateUI(data.deliveryStatus);
+        } catch (error) {
+            console.error('Failed to fetch status:', error);
+            alert('Error fetching status');
+        }
+    }
+
+    function updateUI(status) {
+        let shippingCode = null;
+        const container = document.getElementById('statusControls');
+        container.innerHTML = ''; // Clear previous controls
+
+        if (status === "MENUNGGU VERIFIKASI") {
+            const button = document.createElement('button');
+            button.textContent = 'Update to DIPROSES';
+            button.className = 'btn btn-primary'; // Bootstrap button class
+            button.onclick = function () {
+                updateStatus('DIPROSES');
+            };
+            container.appendChild(button);
+        } else if (status === "DIPROSES") {
+            const select = document.createElement('select');
+            select.className = 'custom-select mb-3'; // Bootstrap select class
+            const options = ['MOTOR', 'TRUK', 'PESAWAT'];
+            options.forEach(opt => {
+                const option = document.createElement('option');
+                option.value = opt;
+                option.textContent = opt.charAt(0).toUpperCase() + opt.slice(1); // Capitalize first letter
+                select.appendChild(option);
+            });
+            container.appendChild(select);
+            const button = document.createElement('button');
+            button.textContent = 'Update to DIKIRIM';
+            button.className = 'btn btn-primary'; // Bootstrap button class
+            button.onclick = function() { updateStatus('DIKIRIM', select.value, shippingCode); };
+            container.appendChild(button);
+        } else if (status === "DIKIRIM") {
+            const button = document.createElement('button');
+            button.textContent = 'Update to TIBA';
+            button.className = 'btn btn-primary'; // Bootstrap button class
+            button.onclick = function () {
+                updateStatus('TIBA');
+            };
+            container.appendChild(button);
+        } else if (status === "TIBA") {
+            const button = document.createElement('button');
+            button.textContent = 'Update to SELESAI';
+            button.className = 'btn btn-primary'; // Bootstrap button class
+            button.onclick = function () {
+                updateStatus('SELESAI');
+            };
+            container.appendChild(button);
+        }
+    }
+
+    async function updateStatus(deliveryStatus, transportationType = null, shippingCode = null) {
+        try {
+            const response = await fetch('https://transaction-service-uflspwyoiq-ew.a.run.app/transactions/update/' + transactionId, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    deliveryStatus,
+                    transportationType,
+                    shippingCode })
+            });
+            if (response.ok) {
+                alert('Status updated successfully!');
+                getStatusAndUpdateUI(); // Refresh UI to reflect new status
+            } else {
+                throw new Error('Failed to update status');
+            }
+        } catch (error) {
+            console.error('Failed to update status:', error);
+            alert('Error updating status');
+        }
+    }
+
+    // Initialize
+    getStatusAndUpdateUI()
+</script>
+</body>
+</html>
